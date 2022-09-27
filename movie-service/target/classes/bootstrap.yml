@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: movie-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-service
+  rabbitmq:
+    username: guest
+    password: guest
+    host: rabbitmq
+    port: 5672
+  profiles:
+    active: dev
+
+queue:
+  movie:
+    name: Movie
+
+redis:
+  host: redis
+  port: 6379
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka
