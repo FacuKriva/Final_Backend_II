@@ -8,7 +8,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/FacuKriva/Final_Backend_II
+          uri: https://github.com/FacuKriva/Final_Backend_II/tree/main/-dev.yml's
   output:
     ansi:
       enabled: ALWAYS
