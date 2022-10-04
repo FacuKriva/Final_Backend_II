@@ -1,0 +1,34 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;
+    username: sa
+    password: sa
+  sql:
+    init:
+      data-locations: classpath:movies.sql
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+  zipkin:
+    enabled: true
+    baseUrl: http://zipkin:9411
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0.0
+    description: Movie Microservice

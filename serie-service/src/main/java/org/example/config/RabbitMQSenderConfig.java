@@ -6,13 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitMQConsumerConfig {
+public class RabbitMQSenderConfig {
+	@Value("${queue.serie.name}")
+	private String movieQueue;
 
-    @Value("${queue.movie.name}")
-    private String movieQueue;
-
-    @Bean
-    public Queue queue() {
-        return new Queue(this.movieQueue, true);
-    }
+	@Bean
+	public Queue queue() {
+		return new Queue(this.movieQueue, true);
+	}
 }

@@ -1,0 +1,37 @@
+server:
+  port: 8086
+
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      database: final-Back
+      port: 27017
+      host: mongodb
+  zipkin:
+    enabled: true
+    baseUrl: http://zipkin:9411
+  rabbitmq:
+    username: guest
+    password: guest
+    host: rabbitmq
+    port: 5672
+
+queue:
+  movie:
+    name: Movie
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0.0
+    description: Series Microservice

@@ -7,6 +7,7 @@ import org.example.utils.RedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,24 +21,16 @@ import java.util.Objects;
 public class MovieService {
 
     private static final Logger logger = LoggerFactory.getLogger(MovieService.class);
+    @Value("${queue.movie.name}")
+    private String movieQueue;
+    private final MovieRepository movieRepository;
 
-    private final MovieRepository repository;
-    private final RedisUtils redisUtils;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public MovieService(MovieRepository movieRepository, RedisUtils redisUtils) {
-        this.repository = movieRepository;
-        this.redisUtils = redisUtils;
-    }
-
-    public List<Movie> findByGenre(String genre) {
-        MovieInfo movieInfo = redisUtils.getMovieInfo(genre);
-        if (Objects.nonNull(movieInfo)) {
-            return movieInfo.getMovies();
-        }
-        List<Movie> movies = repository.findByGenre(genre);
-        redisUtils.createMovieInfo(genre, movies);
-        return movies;
+    public MovieService(MovieRepository movieRepository, RabbitTemplate rabbitTemplate) {
+        this.movieRepository = movieRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<Movie> findByGenre(String genre, Boolean throwError) {
@@ -46,17 +39,15 @@ public class MovieService {
             logger.error("Ocurrió un error al buscar la películas por género");
             throw new RuntimeException();
         }
-        return repository.findByGenre(genre);
-    }
-
-    @RabbitListener(queues = "${queue.movie.name}")
-    public void save(Movie movie) {
-        logger.info("Se recibio una movie a través de rabbit " + movie.toString());
-        saveMovie(movie);
+        return this.movieRepository.findByGenre(genre);
     }
 
     public Movie saveMovie(Movie movie) {
-        return repository.save(movie);
+        Movie savedMovie = movieRepository.save(movie);
+        logger.info("Se recibió una película a través de rabbit");
+        rabbitTemplate.convertAndSend(movieQueue, savedMovie);
+        logger.info("Se ha enviado a la cola");
+        return savedMovie;
     }
 
 }

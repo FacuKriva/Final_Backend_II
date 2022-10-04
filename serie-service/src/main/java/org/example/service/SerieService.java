@@ -2,7 +2,11 @@ package org.example.service;
 
 import org.example.model.Series;
 import org.example.repository.SerieRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,16 +14,29 @@ import java.util.List;
 @Service
 public class SerieService {
 
-    private final SerieRepository serieRepository;
+    @Value("${queue.serie.name}")
+    private String seriesEnCola;
+    private static SerieRepository serieRepository;
+    private final RabbitTemplate rabbitTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(SerieService.class);
 
     @Autowired
-    public SerieService(SerieRepository serieRepository) { this.serieRepository = serieRepository; }
-
-    public Series findById(String id) {
-        return serieRepository.findById(id).orElse(null);
+    public SerieService(SerieRepository serieRepository, RabbitTemplate rabbitTemplate) {
+        SerieService.serieRepository = serieRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
-    public List<Series> findAll() { return serieRepository.findAll(); }
+    public List<Series> findByGenre(String genre) {
+        logger.info("Buscando series según género");
+        return serieRepository.getByGenre(genre);
+    }
 
-    public Series saveSeries(Series series) { return serieRepository.save(series); }
+    public static Series saveSeries(Series series) {
+        logger.info("Guardando serie");
+        return serieRepository.save(series);
+    }
+
+    public List<Series> findAll() {
+        logger.info("Buscando todas las series");
+        return serieRepository.findAll(); }
 }
