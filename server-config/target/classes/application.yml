@@ -1,17 +1,19 @@
 server:
   port: 8888
+
 spring:
   application:
     name: config-service
-  zipkin:
-    enabled: true
-    baseUrl: http://zipkin:9411
   cloud:
     config:
       server:
         git:
-          uri: https://github.com/FacuKriva/Final_Backend_II
+          uri: https://github.com/FacuKriva/Final_Backend_II/tree/main/-dev.yml's
+  output:
+    ansi:
+      enabled: ALWAYS
+
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-service:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/

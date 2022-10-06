@@ -1,6 +1,6 @@
 spring:
   application:
-    name: series-service
+    name: serie-service
   cloud:
     config:
       fail-fast: true
@@ -9,6 +9,10 @@ spring:
         service-id: config-service
   profiles:
     active: dev
+
+queue:
+  serie:
+    name: Serie
 
 eureka:
   client:
